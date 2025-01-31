@@ -5,9 +5,11 @@ title Диаграмма контейнеров (Containers) Теплый дом
 
 Person(user, "Пользователь")
 
-Container_Ext(mobile, "Мобильное приложение", ios / android)
 
 System_Boundary(system_bounday, "Система Теплый дом") {
+
+    Container(mobile, "Мобильное приложение", ios / android)
+
     Container(gateway, "API Gateway", Kong)
 
     Container(auth_service, "Auth Service", Java, "Сервис аутентификации")
@@ -28,6 +30,8 @@ System_Boundary(system_bounday, "Система Теплый дом") {
     ContainerDb(user_device_db, "User Devices DB", postgresql, "БД сервиса конфигурации устройств пользователя")
 
     ContainerQueue(message_broker, "Брокер сообщений", Kafka)
+
+    Container(mqtt_broker, "MQTT Broker", "EMQX")
 
 }
 
@@ -60,9 +64,11 @@ Rel(user_device_service, message_broker, "Отправка пользовате�
 
 Rel(_device_controller, user_device_service, "Получение данных по конфигурации устройства", HTTPS)
 
-Rel_L(_device_controller, smart_device1, "Отправка/получение данных от пользовательского устройства 1")
-Rel_L(_device_controller, smart_device2, "Отправка/получение данных от пользовательского устройства 2")
-Rel_L(_device_controller, smart_device3, "Отправка/получение данных от пользовательского устройства 3")
+Rel_L(_device_controller, mqtt_broker, "Отправка/получение данных от пользовательских устройств")
+
+Rel(mqtt_broker, smart_device1, "Отправка/получение данных от пользовательских устройств")
+Rel(mqtt_broker, smart_device2, "Отправка/получение данных от пользовательских устройств")
+Rel(mqtt_broker, smart_device3, "Отправка/получение данных от пользовательских устройств")
 
 Rel(user_device_service, user_device_db, "Запись/чтение данных")
 Rel(user_device_service, _device_controller, "Получение данных по методам умного устройства", HTTPS)

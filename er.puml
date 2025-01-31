@@ -34,6 +34,7 @@ entity DeviceType {
 
 entity "DeviceSettings" as device_settings {
     id : int <<PK>>
+    device_id: int <<FK>>
     option : json
 }
 
@@ -44,9 +45,11 @@ entity "Notification" as notification {
 }
 
 user ||--o{ auth : uses
-user ||--o{ home : has
+user ||--|{ home : has
 home ||--o{ notification : send
-device ||--o{ home : has
-device ||--o{ DeviceType : has
-device ||--o{ device_settings : has
+
+device }|--|| home : has
+device ||--|| DeviceType : has
+device ||--|{ device_settings : has
+
 @enduml

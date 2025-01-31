@@ -40,10 +40,9 @@ class Option {
   data
   description
 }
-
-HomeEntity "0..*" -- "1..*" DeviceEntity
-HomeEntity "0..*" -- "1..*" UserEntity
-Option "0..*" -- "1..*" DeviceEntity
-DeviceType "0..*" -- "1..*" DeviceEntity
+HomeEntity "1..*" -- "1" UserEntity
+HomeEntity "1" -- "1..*" DeviceEntity
+Option "1..*" -- "1" DeviceEntity
+DeviceType "1" -- "1" DeviceEntity
 
 @enduml
