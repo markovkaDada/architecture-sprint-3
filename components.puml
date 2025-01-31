@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Container>
+!include <C4/C4_Component>
+
+title Диаграмма компонента уведомлений Теплый дом
+
+System_Boundary(c1, "Уведомления") {
+  Component(notification, "Messages", "Kafka","Консьюмер уведомлений")
+  Component(controller_sms, "Sms sender","Интеграция с сервисом отправки SMS")
+  Component(controller_mail, "Mail sender", "Интеграция с сервисом отправки email")
+}
+
+ContainerQueue(users_db, "Kafka", "Хранение данных о пользователе")
+
+Container_Ext(notification_sms, "Отправка SMS", "Сервис отправки sms")
+Container_Ext(notification_mail, "Отправка  Mail", "Сервис отправки email")
+
+Rel(notification, controller_sms, "Запуск задачи на отправку", "HTTPS")
+Rel(notification, controller_mail, "Запуск задачи на отправку", "HTTPS")
+
+Rel(controller_sms, notification_sms, "Отправка SMS", "HTTPS")
+Rel(controller_mail, notification_mail, "Отправка email", "HTTPS")
+
+Rel(users_db, notification, "Запуск задачи на отправку", "TCP")
+
+@enduml

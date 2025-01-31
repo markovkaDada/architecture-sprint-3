@@ -1,0 +1,55 @@
+@startuml
+entity "User" as user {
+    id : int <<PK>>
+    home_id: int <<FK>>
+    name : varchar(255)
+    phone : varchar(255)
+    email : varchar(255)
+}
+
+entity "Auths" as auth {
+    auth_id : int <<PK>>
+    user_id : int <<FK>>
+    token : varchar(255)
+}
+
+entity "Home" as home {
+    id : int <<PK>>
+    user_id: int <<FK>>
+    deviceIds : int[] <<FK>>
+}
+
+entity "Device" as device {
+    id : int <<PK>>
+    home_id : int <<FK>>
+    type : int <<FK>>
+    device_settings_id : int <<FK>>
+    option : json
+}
+
+entity DeviceType {
+    id : int <<PK>>
+    description: varchar(255)
+}
+
+entity "DeviceSettings" as device_settings {
+    id : int <<PK>>
+    device_id: int <<FK>>
+    option : json
+}
+
+entity "Notification" as notification {
+    notification_id : int <<PK>>
+    home_id : int <<FK>>
+    data : json
+}
+
+user ||--o{ auth : uses
+user ||--|{ home : has
+home ||--o{ notification : send
+
+device }|--|| home : has
+device ||--|| DeviceType : has
+device ||--|{ device_settings : has
+
+@enduml

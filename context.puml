@@ -1,0 +1,16 @@
+@startuml
+!include C4/C4_Context.puml
+
+title Context diagram Тёплый дом
+
+Person(user, "Пользователь")
+
+System(system_user, "Система управления Тёплый дом", "Управление и мониторинг температуры")
+System(system_device, "Система отопления", "Управляемая система")
+System(sensor, "Датчик температуры", "Показывает текущую температуру")
+
+Rel(user, system_user, "Управляет температурой, запрашивает данные о температуре")
+Rel(system_user, system_device, "Управляет параметрами системы отопления")
+Rel_R(system_user, sensor, "Мониторинг текущей температуры")
+
+@enduml

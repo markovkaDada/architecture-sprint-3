@@ -1,0 +1,48 @@
+@startuml
+
+title Диаграмма кода User Service
+
+class UserEntity  {
+    id
+    name
+    phone
+    email
+    homeId []
+    setHome(home: Home)
+    getHome(): Home
+}
+
+class HomeEntity {
+    id
+    address
+    name
+    description
+    geAllDevices(): DeviceEntity []
+    getDevice(deviseId: String): DeviceEntity
+    addDevice(deviceEntity: DeviceEntity)
+}
+
+class DeviceType {
+    id
+    description
+}
+
+class DeviceEntity {
+    id
+    name
+    deviceType
+    option
+}
+
+class Option {
+  startDate
+  updateDate
+  data
+  description
+}
+HomeEntity "1..*" -- "1" UserEntity
+HomeEntity "1" -- "1..*" DeviceEntity
+Option "1..*" -- "1" DeviceEntity
+DeviceType "1" -- "1" DeviceEntity
+
+@enduml

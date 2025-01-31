@@ -1,0 +1,84 @@
+@startuml
+!include C4/C4_Container.puml
+
+title Диаграмма контейнеров (Containers) Теплый дом
+
+Person(user, "Пользователь")
+
+
+System_Boundary(system_bounday, "Система Теплый дом") {
+
+    Container(mobile, "Мобильное приложение", ios / android)
+
+    Container(gateway, "API Gateway", Kong)
+
+    Container(auth_service, "Auth Service", Java, "Сервис аутентификации")
+    ContainerDb(auth_db, "Auth DB", postresql, "БД сервиса аутентификации")
+
+    Container(notification_service, "Notification Service", Java, "Сервис управления уведомлениями")
+
+    Container(_device_controller, "Device Controller", Java, "Сервис управления умными устройствами")
+    ContainerDb(device_controller_db, "Device Controller DB", postgresql, "БД сервиса управления девайсами")
+
+    Container(user_service, "User Service", Java, "Сервис управления аккаунтом пользователя")
+    ContainerDb(user_db, "Users DB", postresql, "БД пользователей")
+
+    Container(monitoring_service, "Monitoring Service", Java, "Сервис мониторинга пользовательских устройств")
+    ContainerDb(monitoring_db, "Monitoring DB", postgresql, "БД сервиса мониторинга пользовательских устройств")
+
+    Container(user_device_service, "User Devices Service", Java, "Сервис конфигурации устройств пользователя")
+    ContainerDb(user_device_db, "User Devices DB", postgresql, "БД сервиса конфигурации устройств пользователя")
+
+    ContainerQueue(message_broker, "Брокер сообщений", Kafka)
+
+    Container(mqtt_broker, "MQTT Broker", "EMQX")
+
+}
+
+Container_Ext(sms_notification, "SMS уведомления")
+Container_Ext(email_notification, "Email уведомления")
+Container_Ext(smart_device1, "Пользовательское устройство 1")
+Container_Ext(smart_device2, "Пользовательское устройство 2")
+Container_Ext(smart_device3, "Пользовательское устройство 3")
+Container_Ext(payment_service, "Сервис оплаты")
+
+Rel(user, mobile, "Запрос")
+
+Rel(mobile, gateway, "Отправляет запросы REST API", HTTPS)
+Rel(gateway, mobile, "Отправляет обновления данных в реальном времени", websocket)
+
+Rel(gateway, auth_service, "Проверяет права доступа и валидирует токены", HTTPS)
+
+Rel(gateway, user_service, "Управление аккаунтом, личный кабинет", HTTPS)
+Rel(gateway, user_device_service, "Регистрация, управление и добавление устройств")
+
+Rel(auth_service, auth_db, "Запись/чтение данных")
+
+Rel(user_service, user_db, "Запись/чтение данных")
+Rel(user_service, payment_service, "Оплата подписки")
+
+Rel(_device_controller, device_controller_db, "Запись/чтение данных")
+Rel(_device_controller, message_broker, "Отправка данных мониторинга устройств")
+Rel(user_service, message_broker, "Отправка пользовательских данных для уведомлений")
+Rel(user_device_service, message_broker, "Отправка пользовательских данных для уведомлений")
+
+Rel(_device_controller, user_device_service, "Получение данных по конфигурации устройства", HTTPS)
+
+Rel_L(_device_controller, mqtt_broker, "Отправка/получение данных от пользовательских устройств")
+
+Rel(mqtt_broker, smart_device1, "Отправка/получение данных от пользовательских устройств")
+Rel(mqtt_broker, smart_device2, "Отправка/получение данных от пользовательских устройств")
+Rel(mqtt_broker, smart_device3, "Отправка/получение данных от пользовательских устройств")
+
+Rel(user_device_service, user_device_db, "Запись/чтение данных")
+Rel(user_device_service, _device_controller, "Получение данных по методам умного устройства", HTTPS)
+
+Rel_U(message_broker, monitoring_service, "Отправка данных мониторинга устройств")
+
+Rel(message_broker, notification_service, "Отправка уведомлений")
+Rel(notification_service, sms_notification, "Отправка уведомлений", HTTPS)
+Rel(notification_service, email_notification, "Отправка уведомлений", HTTPS)
+
+Rel(gateway, monitoring_service, "Запрос на аналитику, мониторинг данных", HTTPS)
+Rel(monitoring_service, monitoring_db, "Регистрация и управление устройствами")
+@enduml
